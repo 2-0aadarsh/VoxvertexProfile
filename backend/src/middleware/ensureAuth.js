@@ -10,11 +10,7 @@ export const ensureAuthenticated = (req, res, next) => {
   
   console.log('Authentication failed');
   res.status(401).json({ 
-    message: "Unauthorized",
-    debug: {
-      sessionExists: !!req.session,
-      userExists: !!req.user,
-      isAuthenticatedExists: !!req.isAuthenticated
-    }
+    success: false,
+    message: "Authentication required. Please log in to access this resource."
   });
 };

@@ -33,6 +33,7 @@ export default function LoginPage() {
           email: email.trim(),
           password: password.trim()
         }),
+        credentials: 'include', // Include cookies for session management
       })
 
       const data: LoginResponse = await response.json()

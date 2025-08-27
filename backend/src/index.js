@@ -113,7 +113,7 @@ app.get('/', (req, res) => {
     res.send("VVS Website")
 })
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 server.listen(PORT, () => {
     console.log(`Server Is Running On Port : ${PORT}`);

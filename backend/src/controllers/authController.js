@@ -37,13 +37,39 @@ const updateProfile = async (userId) => {
 
 export const signIn = async (req, res) => {
     console.log(`Authenticated User : ${req.user}`);
-    res.status(200).json({ message: "Login Successful", user: req.user });
+    res.status(200).json({ 
+        success: true,
+        message: "Login Successful", 
+        user: req.user 
+    });
 };
 
+
+// Password validation function
+const isPasswordValid = (password) => {
+    return password.length >= 6 &&
+           /[A-Z]/.test(password) &&
+           /[a-z]/.test(password) &&
+           /[!@#$%^&*(),.?":{}|<>]/.test(password);
+};
 
 export const signUp = async (req, res, next) => {
     try {
         const { firstName, lastName, email, phone, password } = req.body;
+        
+        // Validate password
+        if (!password) {
+            return res.status(400).json({ 
+                message: "Password is required" 
+            });
+        }
+        
+        if (!isPasswordValid(password)) {
+            return res.status(400).json({ 
+                message: "Password must be at least 6 characters long and contain at least 1 uppercase letter, 1 lowercase letter, and 1 special character" 
+            });
+        }
+        
         const existingUser = await User.findOne({ $or: [{ email }, { mobileNo: phone }] });
 
         if (existingUser) {
@@ -66,11 +92,16 @@ export const signUp = async (req, res, next) => {
         req.login(newUser, (err) => {
             if (err) {
                 console.error("Auto-login after registration failed:", err);
-                return res.status(201).json(newUser); // Still return success but without session
+                return res.status(201).json({
+                    success: true,
+                    message: "Registration successful! Welcome to Voxvertex!",
+                    user: newUser
+                }); // Still return success but without session
             }
 
             return res.status(201).json({
-                message: "Registration successful",
+                success: true,
+                message: "Registration successful! Welcome to Voxvertex!",
                 user: newUser
             });
         });

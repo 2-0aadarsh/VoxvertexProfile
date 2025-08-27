@@ -71,23 +71,38 @@ export default function SignupForm({
     setApiError('')
     
     try {
-      const response = await fetch('/api/signup', {
+      // Split full name for backend
+      const nameParts = formData.fullName.trim().split(' ')
+      const firstName = nameParts[0] || ''
+      const lastName = nameParts.slice(1).join(' ') || nameParts[0] || '' // Use first name if no last name
+      
+      const backendData = {
+        firstName,
+        lastName,
+        email: formData.email,
+        phone: formData.email, // Using email as phone for now, you can add phone field later
+        password: formData.password
+      }
+      
+      const response = await fetch('http://localhost:3001/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(backendData),
+        credentials: 'include', // Include cookies for session management
       })
 
-      const data: SignupResponse = await response.json()
+      const data = await response.json()
 
       if (!response.ok) {
         throw new Error(data.message || 'Something went wrong')
       }
 
-      if (data.success) {
+      // Backend returns success field in response
+      if (response.ok && (data.success || data.user)) {
         setIsSuccess(true)
-        setSuccessMessage(data.message || 'Account created successfully!')
+        setSuccessMessage(data.message || 'Account created successfully! Welcome to Voxvertex!')
         
         // Optional: Reset form after successful signup
         // setFormData({
@@ -121,7 +136,7 @@ export default function SignupForm({
                formData.email && 
                /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
       case 2:
-        return formData.password && formData.password.length >= 6
+        return formData.password && isPasswordValid(formData.password)
       case 3:
         return formData.whoAreYou && 
                formData.companyTitle && 
@@ -155,6 +170,13 @@ export default function SignupForm({
 
   const getAvailableActivities = () => {
     return activitiesByIndustry[formData.companyTitle as keyof typeof activitiesByIndustry] || []
+  }
+
+  const isPasswordValid = (password: string) => {
+    return password.length >= 6 &&
+           /[A-Z]/.test(password) &&
+           /[a-z]/.test(password) &&
+           /[!@#$%^&*(),.?":{}|<>]/.test(password)
   }
 
   // Success state
@@ -199,8 +221,8 @@ export default function SignupForm({
   return (
     <div className="w-full">
       <div className="text-center mb-3">
-        <h1 className="text-lg font-bold mb-0.5">Create your account</h1>
-        <p className="text-xs text-gray-500">Join our community and unlock exclusive features</p>
+        <h1 className="text-lg font-bold mb-0.5 text-gray-800">Create your account</h1>
+        <p className="text-xs text-gray-600">Join our community and unlock exclusive features</p>
       </div>
 
       <ProgressIndicator currentStep={currentStep} totalSteps={totalSteps} />
@@ -254,9 +276,9 @@ export default function SignupForm({
                   value={formData.fullName}
                   onChange={(e) => updateFormData({ fullName: e.target.value })}
                   placeholder="Enter your full name"
-                  className={`w-full px-3 py-2 text-sm bg-gray-50 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                  className={`w-full px-4 py-3 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent placeholder-gray-400 text-gray-700 ${
                     formData.fullName && formData.fullName.trim().length < 2 
-                      ? 'ring-2 ring-red-300' 
+                      ? 'ring-2 ring-red-300 border-red-300' 
                       : ''
                   }`}
                 />
@@ -274,9 +296,9 @@ export default function SignupForm({
                   value={formData.email}
                   onChange={(e) => updateFormData({ email: e.target.value })}
                   placeholder="Enter your email address"
-                  className={`w-full px-3 py-2 text-sm bg-gray-50 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                  className={`w-full px-4 py-3 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent placeholder-gray-400 text-gray-700 ${
                     formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
-                      ? 'ring-2 ring-red-300' 
+                      ? 'ring-2 ring-red-300 border-red-300' 
                       : ''
                   }`}
                 />
@@ -298,24 +320,73 @@ export default function SignupForm({
                 value={formData.password}
                 onChange={(e) => updateFormData({ password: e.target.value })}
                 placeholder="Create a secure password"
-                className={`w-full px-3 py-2 text-sm bg-gray-50 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                  formData.password && formData.password.length < 6 
-                    ? 'ring-2 ring-red-300' 
+                className={`w-full px-4 py-3 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent placeholder-gray-400 text-gray-700 ${
+                  formData.password && !isPasswordValid(formData.password)
+                    ? 'ring-2 ring-red-300 border-red-300' 
                     : ''
                 }`}
               />
-              <p className={`text-xs ${
-                formData.password && formData.password.length < 6 
-                  ? 'text-red-600' 
-                  : 'text-gray-500'
-              }`}>
-                Password must be at least 6 characters long
-                {formData.password && (
-                  <span className="ml-2">
-                    ({formData.password.length}/6)
-                  </span>
-                )}
-              </p>
+              <div className="space-y-1">
+                <p className="text-xs text-gray-600 font-medium">Password requirements:</p>
+                <div className="space-y-0.5">
+                  <div className={`flex items-center gap-1 text-xs ${
+                    formData.password && formData.password.length >= 6 
+                      ? 'text-green-600' 
+                      : 'text-gray-500'
+                  }`}>
+                    <span className={`w-3 h-3 rounded-full flex items-center justify-center text-xs ${
+                      formData.password && formData.password.length >= 6
+                        ? 'bg-green-500 text-white'
+                        : 'bg-gray-300 text-gray-500'
+                    }`}>
+                      ✓
+                    </span>
+                    At least 6 characters
+                  </div>
+                  <div className={`flex items-center gap-1 text-xs ${
+                    formData.password && /[A-Z]/.test(formData.password)
+                      ? 'text-green-600' 
+                      : 'text-gray-500'
+                  }`}>
+                    <span className={`w-3 h-3 rounded-full flex items-center justify-center text-xs ${
+                      formData.password && /[A-Z]/.test(formData.password)
+                        ? 'bg-green-500 text-white'
+                        : 'bg-gray-300 text-gray-500'
+                    }`}>
+                      ✓
+                    </span>
+                    At least 1 uppercase letter
+                  </div>
+                  <div className={`flex items-center gap-1 text-xs ${
+                    formData.password && /[a-z]/.test(formData.password)
+                      ? 'text-green-600' 
+                      : 'text-gray-500'
+                  }`}>
+                    <span className={`w-3 h-3 rounded-full flex items-center justify-center text-xs ${
+                      formData.password && /[a-z]/.test(formData.password)
+                        ? 'bg-green-500 text-white'
+                        : 'bg-gray-300 text-gray-500'
+                    }`}>
+                      ✓
+                    </span>
+                    At least 1 lowercase letter
+                  </div>
+                  <div className={`flex items-center gap-1 text-xs ${
+                    formData.password && /[!@#$%^&*(),.?":{}|<>]/.test(formData.password)
+                      ? 'text-green-600' 
+                      : 'text-gray-500'
+                  }`}>
+                    <span className={`w-3 h-3 rounded-full flex items-center justify-center text-xs ${
+                      formData.password && /[!@#$%^&*(),.?":{}|<>]/.test(formData.password)
+                        ? 'bg-green-500 text-white'
+                        : 'bg-gray-300 text-gray-500'
+                    }`}>
+                      ✓
+                    </span>
+                    At least 1 special character
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -329,7 +400,7 @@ export default function SignupForm({
                   id="whoAreYou"
                   value={formData.whoAreYou}
                   onChange={(e) => updateFormData({ whoAreYou: e.target.value })}
-                  className="w-full px-3 py-2 text-sm bg-gray-50 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-4 py-3 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-700"
                 >
                   <option value="">Select your role</option>
                   <option value="speaker">Speaker</option>
@@ -346,7 +417,7 @@ export default function SignupForm({
                   id="companyTitle"
                   value={formData.companyTitle}
                   onChange={(e) => handleIndustryChange(e.target.value)}
-                  className="w-full px-3 py-2 text-sm bg-gray-50 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-4 py-3 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-700"
                 >
                   <option value="">Select your industry</option>
                   <option value="technology">Technology</option>
@@ -438,7 +509,10 @@ export default function SignupForm({
       <div className="text-center mt-2">
         <p className="text-xs text-gray-500">
           Already have an account?{' '}
-          <button className="text-orange-500 hover:underline">
+          <button 
+            onClick={() => window.location.href = '/signup/login'}
+            className="text-orange-500 hover:underline"
+          >
             Sign in
           </button>
         </p>
