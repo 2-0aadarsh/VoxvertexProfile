@@ -43,9 +43,48 @@ export default function SignupPage() {
 
   const handleSubmit = async () => {
     setIsLoading(true)
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    alert('Account created successfully!')
-    setIsLoading(false)
+    
+    try {
+      const response = await fetch('http://localhost:3001/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: formData.fullName.split(' ')[0] || formData.fullName,
+          lastName: formData.fullName.split(' ')[1] || '',
+          email: formData.email,
+          phone: '1234567890', // You may want to add phone field to form
+          password: formData.password
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Something went wrong')
+      }
+
+      if (data.success) {
+        alert('Account created successfully! 🎉\n\nYou can now login with your credentials.')
+        
+        // Redirect to login page after successful signup
+        setTimeout(() => {
+          window.location.href = '/signup/login'
+        }, 1500)
+      } else {
+        alert(data.message || 'Failed to create account')
+      }
+    } catch (error) {
+      console.error('Signup error:', error)
+      alert(
+        error instanceof Error 
+          ? error.message 
+          : 'Network error. Please check your connection and try again.'
+      )
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const isStepValid = () => {
@@ -139,7 +178,7 @@ export default function SignupPage() {
                         value={formData.fullName}
                         onChange={(e) => updateFormData({ fullName: e.target.value })}
                         placeholder="Enter your full name"
-                        className="w-full px-3 py-2 text-sm bg-gray-50 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-3 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
                       />
                     </div>
                     <div className="space-y-1">
@@ -152,7 +191,7 @@ export default function SignupPage() {
                         value={formData.email}
                         onChange={(e) => updateFormData({ email: e.target.value })}
                         placeholder="Enter your email address"
-                        className="w-full px-3 py-2 text-sm bg-gray-50 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-3 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
                       />
                     </div>
                   </>
@@ -169,7 +208,7 @@ export default function SignupPage() {
                       value={formData.password}
                       onChange={(e) => updateFormData({ password: e.target.value })}
                       placeholder="Create a secure password"
-                      className="w-full px-3 py-2 text-sm bg-gray-50 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-3 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
                     />
                     <p className="text-xs text-gray-500">
                       Password must be at least 6 characters long
@@ -187,7 +226,7 @@ export default function SignupPage() {
                         id="whoAreYou"
                         value={formData.whoAreYou}
                         onChange={(e) => updateFormData({ whoAreYou: e.target.value })}
-                        className="w-full px-3 py-2 text-sm bg-gray-50 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-3 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
                       >
                         <option value="">Select your role</option>
                         <option value="speaker">Speaker</option>
@@ -204,7 +243,7 @@ export default function SignupPage() {
                         id="companyTitle"
                         value={formData.companyTitle}
                         onChange={(e) => handleIndustryChange(e.target.value)}
-                        className="w-full px-3 py-2 text-sm bg-gray-50 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-3 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
                       >
                         <option value="">Select your industry</option>
                         <option value="technology">Technology</option>
