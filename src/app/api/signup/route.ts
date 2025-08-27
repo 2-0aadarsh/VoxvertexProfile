@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { FormData } from '../../signup/types'
+import { userStorage } from '../../../lib/userStorage'
 
 // Response types
 interface SignupResponse {
@@ -62,27 +63,29 @@ function validateSignupData(data: FormData): { isValid: boolean; errors: string[
   }
 }
 
-// Simulate user creation (replace with your actual database logic)
+// Create user using shared storage
 async function createUser(userData: FormData) {
+  console.log('📝 Creating new user:', userData.email)
+  
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 1000))
 
-  // Check if user already exists (simulate)
-  if (userData.email === 'test@example.com') {
-    throw new Error('User with this email already exists')
-  }
+  try {
+    // Add user to shared storage
+    const newUser = userStorage.addUser({
+      fullName: userData.fullName,
+      email: userData.email,
+      password: userData.password,
+      whoAreYou: userData.whoAreYou,
+      companyTitle: userData.companyTitle,
+      activity: userData.activity
+    })
 
-  // Generate a unique user ID (in real app, this would come from your database)
-  const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-
-  return {
-    id: userId,
-    fullName: userData.fullName,
-    email: userData.email,
-    whoAreYou: userData.whoAreYou,
-    companyTitle: userData.companyTitle,
-    activity: userData.activity,
-    createdAt: new Date().toISOString()
+    console.log('✅ User created successfully:', newUser.email)
+    return newUser
+  } catch (error) {
+    console.error('❌ User creation failed:', error)
+    throw error
   }
 }
 

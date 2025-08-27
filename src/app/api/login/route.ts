@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-
+import { userStorage } from '../../../lib/userStorage'
 
 interface LoginResponse {
   success: boolean
@@ -29,36 +29,7 @@ interface LoginRequest {
   password: string
 }
 
-// Mock user database 
-const mockUsers = [
-  {
-    id: 'user_1',
-    fullName: 'Maxwell',
-    email: 'maxwell@example.com',
-    password: 'password123', 
-    whoAreYou: 'speaker',
-    companyTitle: 'technology',
-    activity: ['Software Development', 'AI/Machine Learning', 'Web Development']
-  },
-  {
-    id: 'user_2',
-    fullName: 'Benett Down',
-    email: 'benett@example.com',
-    password: 'password123',
-    whoAreYou: 'organizer',
-    companyTitle: 'healthcare',
-    activity: ['Healthcare Management', 'Medical Research', 'Patient Care']
-  },
-  {
-    id: 'user_3',
-    fullName: 'Riya',
-    email: 'riyal1234@gmail.com',
-    password: 'password123',
-    whoAreYou: 'participant',
-    companyTitle: 'business',
-    activity: ['Project Management', 'Business Strategy', 'Team Leadership']
-  }
-]
+// Using shared user storage instead of hard-coded array
 
 // Validation function
 function validateLoginData(data: LoginRequest): { isValid: boolean; errors: string[] } {
@@ -88,21 +59,39 @@ function generateToken(userId: string): string {
 }
 
 async function authenticateUser(email: string, password: string) {
+  // Debug logging
+  const allUsers = userStorage.getAllUsers()
+  console.log('🔐 Attempting authentication for email:', email)
+  console.log('Password provided:', password ? '[PROVIDED]' : '[NOT PROVIDED]')
+  console.log('Available users:', allUsers.map(u => u.email))
+  console.log('Total users in storage:', userStorage.getUserCount())
+  
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 800))
 
-  // Find user by email
-  const user = mockUsers.find(u => u.email.toLowerCase() === email.toLowerCase())
+  // Find user by email using shared storage
+  const trimmedEmail = email.trim()
+  const user = userStorage.findUserByEmail(trimmedEmail)
+  
+  console.log('User found:', user ? user.email : 'No user found')
   
   if (!user) {
+    console.log('❌ Authentication failed: User not found')
+    console.log('Available emails:', allUsers.map(u => u.email).join(', '))
     throw new Error('Invalid email or password')
   }
 
-  // Check password 
-  if (user.password !== password) {
+  // Check password (trim whitespace)
+  const trimmedPassword = password.trim()
+  console.log('Password match:', user.password === trimmedPassword)
+  
+  if (user.password !== trimmedPassword) {
+    console.log('❌ Authentication failed: Incorrect password')
     throw new Error('Invalid email or password')
   }
 
+  console.log('✅ Authentication successful for:', user.email)
+  
   // Return user without password
   const { password: _, ...userWithoutPassword } = user
   return userWithoutPassword

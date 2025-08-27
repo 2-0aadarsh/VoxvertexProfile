@@ -24,7 +24,7 @@ export default function LoginPage() {
     setApiError('')
 
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch('http://localhost:3001/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ export default function LoginPage() {
         
         // Redirect after success
         setTimeout(() => {
-          // window.location.href = '/dashboard' // Uncomment to redirect
+          window.location.href = '/dashboard' // Redirect to dashboard after successful login
         }, 2000)
       } else {
         setApiError(data.message || 'Login failed')
