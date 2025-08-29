@@ -93,7 +93,7 @@ const Sidebar = () => {
         </div>
 
         <div className="border-t-2 border-[#000000]/19 p-5 flex items-center justify-between ">
-          <div className=" profileImg w-[46px] h-[46px] overflow-hidden flex items-center justify-center">
+          <div className=" profileImg w-[46px] h-[46px] overflow-hidden cursor-pointer flex items-center justify-center">
             <img
               src="./profile.png"
               alt="profile"
@@ -102,7 +102,7 @@ const Sidebar = () => {
           </div>
 
           <div className=" profileDetails flex flex-col items-start justify-center ">
-            <h2 className="text-lg font-bold leading-[150.7%] tracking-[8%]  ">
+            <h2 className="text-lg font-bold leading-[150.7%] tracking-[8%] cursor-pointer ">
               {userDetails.name}
             </h2>
             <p className="text-[13px] text-[#6B7280] leading-[150.7%] tracking-[8%]">
@@ -111,7 +111,7 @@ const Sidebar = () => {
           </div>
 
           <div className="logout">
-            <MdLogout className="text-[#DC2626] text-[33px]" />
+            <MdLogout className="text-[#DC2626] text-[33px] cursor-pointer" />
           </div>
         </div>
       </div>

@@ -1,11 +1,13 @@
-import { Sunset } from "lucide-react";
+"use client";
+
+import { motion } from "framer-motion";
 import { RiEditBoxFill } from "react-icons/ri";
 
 const SectionHeader = ({ id, icon, title, subTitle = "" }) => {
   return (
     <header
       id={id}
-      className="w-full border-b-2 border-[#FF6B35] flex items-center justify-between pt-4 pb-8 "
+      className="w-full border-b-2 border-[#FF6B35]/17 flex items-center justify-between pt-4 pb-8 "
     >
       <div className="flex items-center gap-6">
         {icon && (
@@ -29,11 +31,40 @@ const SectionHeader = ({ id, icon, title, subTitle = "" }) => {
         </button>
       </div>
 
-      <button className="border-[#FF6B35] border-[1px] shadow-md text-[#FF6B35] w-[101px] h-[40px] text-center rounded-2xl font-semibold">
+      {/* Animated Add Button */}
+      <motion.button
+        whileHover={{
+          scale: 1.05,
+          // backgroundColor: "#FF6B35",
+          // color: "#fff",
+          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.25)",
+        }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="border-[#FF6B35] border-[1px] shadow-md text-[#FF6B35] 
+                   w-[101px] h-[40px] text-center rounded-2xl font-semibold 
+                   bg-white flex items-center justify-center gap-3"
+      >
+        <span>+</span>
+        <span>Add</span>
+      </motion.button>
+      {/* <motion.button
+        whileHover={{
+          scale: 1.05,
+          backgroundColor: "#FF6B35",
+          color: "#fff",
+          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.25)",
+        }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="border-[#FF6B35] border-[1px] shadow-md text-[#FF6B35] 
+                   w-[101px] h-[40px] text-center rounded-2xl font-semibold 
+                   bg-white"
+      >
         + Add
-      </button>
+      </motion.button> */}
     </header>
   );
 };
 
-export default SectionHeader
+export default SectionHeader;

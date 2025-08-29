@@ -8,7 +8,7 @@ import { LuBell } from "react-icons/lu";
 const ProfileHeader = () => {
   const [notifications, setNotifications] = useState(3);
   return (
-    <header className="w-full h-20 bg-[#FFFFFF] flex items-center justify-end px-6 text-[#000000] shadow-lg">
+    <header className="w-full h-20 bg-[#FFFFFF] flex items-center justify-end px-6 text-[#000000] shadow-sm">
       <div className="flex items-center gap-8">
         <SearchBar />
         {/* Notification Bell */}

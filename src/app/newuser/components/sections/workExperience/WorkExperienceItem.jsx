@@ -33,7 +33,7 @@ const WorkExperienceItem = ({
             <p className="text-[#FF6B35] text-sm flex items-center gap-2">
               <FaRegCalendar /> {period}
             </p>
-            <span className="bg-[#FF6B35] text-white text-xs px-2 py-1 rounded-md mt-1 inline-block">
+            <span className="bg-[#FF6B35] text-white text-xs px-5 py-2 rounded-md mt-3 inline-block">
               {employmentType}
             </span>
           </div>
@@ -47,7 +47,7 @@ const WorkExperienceItem = ({
           {skills.map((skill, index) => (
             <span
               key={index}
-              className="bg-[#FF6B35]/12 text-[#FF6B35] text-xs px-3 py-1 rounded-md border border-[#FF6B35]/18"
+              className="bg-[#FF6B35]/12 text-[#FF6B35] text-xs px-5 py-1 rounded-md border border-[#FF6B35]/18"
             >
               {skill}
             </span>

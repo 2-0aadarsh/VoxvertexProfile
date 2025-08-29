@@ -17,7 +17,7 @@ const Education = () => {
 
 
   return (
-    <div className="w-full py-4 shadow-md rounded-lg ">
+    <div className="w-[1154px] bg-[#ffffff] py-4 shadow-md rounded-[13.01px] ">
       <div className="w-[90%] mx-auto ">
         <SectionHeader id="education" title="Education" />
 

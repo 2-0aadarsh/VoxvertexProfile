@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import ProfileHeader from "./components/header/ProfileHeader"
 import Sidebar from "./components/sidebar/Sidebar";
 import AboutUser from "./components/sections/aboutUser/AboutUser"
+import Post from "./components/sections/posts/Posts"
 import WorkExperience from "./components/sections/workExperience/WorkExperience"
 import Education from "./components/sections/education/Education"
 import AwardsAndCertifications from "./components/sections/awardsAndCertifications/AwardsAndCertifications"
@@ -34,15 +35,18 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       > 
         <ProfileHeader />
-        <div className="flex items-stretch justify-between  min-h-screen" >
+        <div className="flex flex-col lg:flex-row items-stretch justify-between min-h-screen" >
           <Sidebar />
-          <main className="flex flex-col items-center justify-between gap-5 py-5">
-            <AboutUser />
-            <WorkExperience />
-            <Education />
-            <AwardsAndCertifications />
-            <FeaturedVideos />
-          </main>
+          <div className="w-full bg-[#fffbf5]">
+            <main className="flex flex-col items-center justify-between gap-5 py-5 px-4 lg:px-0">
+              <AboutUser />
+              <Post />
+              <WorkExperience />
+              <Education />
+              <AwardsAndCertifications />
+              <FeaturedVideos />
+            </main>
+          </div>
         </div>
         {children}
       </body>

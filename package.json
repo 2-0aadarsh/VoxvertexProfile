@@ -12,22 +12,12 @@
     "install:backend": "cd backend && npm install"
   },
   "dependencies": {
-<<<<<<< HEAD
-<<<<<<< HEAD
     "framer-motion": "^12.23.12",
     "lucide-react": "^0.542.0",
-    "next": "15.5.0",
-    "react": "19.1.0",
-    "react-dom": "19.1.0"
-=======
-=======
-    "lucide-react": "^0.542.0",
->>>>>>> 1d8908f (build header and sidebar)
     "next": "15.5.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-icons": "^5.5.0"
->>>>>>> 8cffe59 (first commit)
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -35,14 +25,9 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-<<<<<<< HEAD
     "concurrently": "^7.6.0",
     "eslint": "^9",
-    "eslint-config-next": "15.5.0",
-=======
-    "eslint": "^9",
     "eslint-config-next": "15.5.2",
->>>>>>> 8cffe59 (first commit)
     "tailwindcss": "^4",
     "typescript": "^5"
   }
