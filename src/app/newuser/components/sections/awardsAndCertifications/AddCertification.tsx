@@ -532,6 +532,7 @@ export default function AddCertification({ isOpen, onClose }: AddCertificationPr
                     className="w-full rounded-md border border-gray-300 px-4 py-2 text-[11px] focus:ring-1 focus:ring-orange-400 outline-none"
                   />
                 </div>
+                
                 {/* Description */}
                 <div className="relative">
                   <label className="absolute -top-2 left-3 bg-white px-1 text-[11px] font-medium text-orange-500 z-10">
