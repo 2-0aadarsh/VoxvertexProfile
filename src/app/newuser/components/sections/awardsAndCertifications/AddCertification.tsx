@@ -17,9 +17,8 @@ export default function AddCertification({ isOpen, onClose }: AddCertificationPr
   const [expireMonth, setExpireMonth] = useState("");
   const [expireYear, setExpireYear] = useState("");
   const [doesNotExpire, setDoesNotExpire] = useState(false);
-  const [credentialId, setCredentialId] = useState("");
-  const [credentialUrl, setCredentialUrl] = useState("");
   const [description, setDescription] = useState("");
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   
   const [showTypeDropdown, setShowTypeDropdown] = useState(false);
   const [showIssueMonthDropdown, setShowIssueMonthDropdown] = useState(false);
@@ -32,6 +31,7 @@ export default function AddCertification({ isOpen, onClose }: AddCertificationPr
   const issueYearRef = useRef<HTMLDivElement>(null);
   const expireMonthRef = useRef<HTMLDivElement>(null);
   const expireYearRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Handle the case where onClose might be undefined
   const handleClose = () => {
@@ -102,6 +102,17 @@ export default function AddCertification({ isOpen, onClose }: AddCertificationPr
   const handleExpireYearSelect = (year: string) => {
     setExpireYear(year);
     setShowExpireYearDropdown(false);
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setUploadedFile(file);
+    }
+  };
+
+  const handleBrowseFile = () => {
+    fileInputRef.current?.click();
   };
 
   const handleSave = () => {
@@ -505,31 +516,54 @@ export default function AddCertification({ isOpen, onClose }: AddCertificationPr
                   </div>
                 )}
 
-                {/* Credential ID */}
+                {/* Upload Credential */}
                 <div className="relative">
                   <label className="absolute -top-2 left-3 bg-white px-1 text-[11px] font-medium text-orange-500 z-10">
-                    Credential ID *
+                    Upload Credential *
                   </label>
+                  <div className="w-full rounded-md border-2 border-dashed border-gray-300 px-4 py-8 text-center bg-gray-50">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      {/* Upload Icon */}
+                      <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                        <svg className="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                      </div>
+                      
+                      {uploadedFile ? (
+                        <div className="text-center">
+                          <p className="text-[11px] text-gray-700 font-medium">{uploadedFile.name}</p>
+                          <p className="text-[10px] text-gray-500">
+                            {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <p className="text-[11px] text-gray-600 font-medium">Tap to upload Credential</p>
+                          <p className="text-[10px] text-gray-400">
+                            Supported formats: PDF, JPG, PNG
+                          </p>
+                          <p className="text-[10px] text-gray-400">
+                            (Max 100MB/5Mpx)
+                          </p>
+                        </div>
+                      )}
+                      
+                      <button
+                        type="button"
+                        onClick={handleBrowseFile}
+                        className="px-5 py-1 rounded-md text-[10px] text-white bg-orange-500 hover:bg-orange-600 transition-colors"
+                      >
+                        Browse File
+                      </button>
+                    </div>
+                  </div>
                   <input
-                    type="text"
-                    placeholder="eg. AWS-ASA-12345"
-                    value={credentialId}
-                    onChange={(e) => setCredentialId(e.target.value)}
-                    className="w-full rounded-md border border-gray-300 px-4 py-2 text-[11px] focus:ring-1 focus:ring-orange-400 outline-none"
-                  />
-                </div>
-
-                {/* Credential URL */}
-                <div className="relative">
-                  <label className="absolute -top-2 left-3 bg-white px-1 text-[11px] font-medium text-orange-500 z-10">
-                    Credential URL *
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="https://"
-                    value={credentialUrl}
-                    onChange={(e) => setCredentialUrl(e.target.value)}
-                    className="w-full rounded-md border border-gray-300 px-4 py-2 text-[11px] focus:ring-1 focus:ring-orange-400 outline-none"
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={handleFileUpload}
+                    className="hidden"
                   />
                 </div>
                 

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface VideoData {
-  videoUrl: string;
+  videoFile: File | null;
   title: string;
   description: string;
   customThumbnailUrl: string;
@@ -17,10 +17,12 @@ interface AddFeaturedVideoProps {
 }
 
 export default function AddFeaturedVideo({ isOpen, onClose, onSave }: AddFeaturedVideoProps) {
-  const [videoUrl, setVideoUrl] = useState("");
+  const [videoFile, setVideoFile] = useState<File | null>(null);
   const [videoTitle, setVideoTitle] = useState("");
   const [description, setDescription] = useState("");
   const [customThumbnailUrl, setCustomThumbnailUrl] = useState("");
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Handle the case where onClose might be undefined
   const handleClose = () => {
@@ -29,9 +31,20 @@ export default function AddFeaturedVideo({ isOpen, onClose, onSave }: AddFeature
     }
   };
 
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setVideoFile(file);
+    }
+  };
+
+  const handleBrowseFile = () => {
+    fileInputRef.current?.click();
+  };
+
   const handleSubmit = () => {
     // Basic validation
-    if (!videoUrl || !videoTitle || !description || !customThumbnailUrl) {
+    if (!videoFile || !videoTitle || !description || !customThumbnailUrl) {
       alert("Please fill in all required fields");
       return;
     }
@@ -39,7 +52,7 @@ export default function AddFeaturedVideo({ isOpen, onClose, onSave }: AddFeature
     // Pass the data back to parent
     if (onSave) {
       onSave({
-        videoUrl,
+        videoFile,
         title: videoTitle,
         description,
         customThumbnailUrl
@@ -47,14 +60,14 @@ export default function AddFeaturedVideo({ isOpen, onClose, onSave }: AddFeature
     }
 
     // Reset form
-    setVideoUrl("");
+    setVideoFile(null);
     setVideoTitle("");
     setDescription("");
     setCustomThumbnailUrl("");
   };
 
   const handleCancel = () => {
-    setVideoUrl("");
+    setVideoFile(null);
     setVideoTitle("");
     setDescription("");
     setCustomThumbnailUrl("");
@@ -75,7 +88,7 @@ export default function AddFeaturedVideo({ isOpen, onClose, onSave }: AddFeature
             onClick={handleClose}
           />
 
-          {/* Mdal */}
+          {/* Modal */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -108,24 +121,70 @@ export default function AddFeaturedVideo({ isOpen, onClose, onSave }: AddFeature
                   <h3 className="text-[11px] font-medium text-orange-500 mb-4">
                     How would you like to add your video?
                   </h3>
+                  
+                  {/* Upload Video Option Button */}
+                  <div className="mb-6">
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center gap-2 px-16 py-3 rounded-md text-white bg-orange-500 text-[11px] font-medium hover:bg-orange-600 transition-colors min-w-[150px]"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      Upload Video
+                    </button>
+                  </div>
                 </div>
 
-                {/* Video URL */}
+                {/* Upload Video */}
                 <div className="relative">
                   <label className="absolute -top-2 left-3 bg-white px-1 text-[11px] font-medium text-orange-500 z-10">
-                    Video URL *
+                    Upload Video *
                   </label>
+                  <div className="w-full rounded-md border border-gray-300 px-4 py-8 text-center bg-white">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      {/* Upload Icon */}
+                      <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                        <svg className="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                      </div>
+                      
+                      {videoFile ? (
+                        <div className="text-center">
+                          <p className="text-[11px] text-gray-700 font-medium">{videoFile.name}</p>
+                          <p className="text-[10px] text-gray-500">
+                            {(videoFile.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <p className="text-[11px] text-gray-600 font-medium">Tap to upload Video</p>
+                          <p className="text-[10px] text-gray-400">
+                            Supported formats: MP4, AVI, MOV
+                          </p>
+                          <p className="text-[10px] text-gray-400">
+                            (Max 100MB/5Mpx)
+                          </p>
+                        </div>
+                      )}
+                      
+                      <button
+                        type="button"
+                        onClick={handleBrowseFile}
+                        className="px-5 py-1 rounded-md text-[10px] text-white bg-orange-500 hover:bg-orange-600 transition-colors"
+                      >
+                        Browse File
+                      </button>
+                    </div>
+                  </div>
                   <input
-                    type="text"
-                    placeholder="https://"
-                    value={videoUrl}
-                    onChange={(e) => setVideoUrl(e.target.value)}
-                    className="w-full rounded-md border border-gray-300 px-4 py-2 text-[11px] focus:ring-1 focus:ring-orange-400 outline-none"
-                    required
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".mp4,.avi,.mov"
+                    onChange={handleFileUpload}
+                    className="hidden"
                   />
-                  <p className="text-[10px] text-orange-400 mt-1">
-                    Supported platforms: YouTube, Vimeo
-                  </p>
                 </div>
 
                 {/* Video Title */}
